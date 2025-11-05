@@ -249,6 +249,18 @@ void setTrackingURL(char* or, Voo* voo){
 }
 
 /**
+ *  funçao de comparaçao de voos que retorna 1 se a data de partida do segundo voo for mais recente,
+ * 1 se data de partida do primeiro voo for mais recente e 0 se forem iguais 
+ * */
+int compararVoo(Voo* a, Voo* b) {
+    if (compararDataHora(a->actual_departure,b->actual_departure) == 0) return 0;
+    else {
+        if (compararDataHora(a->actual_departure,b->actual_departure) > 0 ) return 1;
+        else return -1;
+    }
+}
+
+/**
  * Função que apaga um Voo
  */
 void destruirVoo(Voo* voo){

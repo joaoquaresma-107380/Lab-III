@@ -11,6 +11,8 @@ typedef struct manager_Aeroportos Manager_Aeroportos;
 void value_destroy_func(gpoint p);
 Manager_Aeroportos* createManagerAeroportos();
 gboolean adicionaAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager);
+Aeroporto* procurarReserva(Manager_Aeroportos* gestor, char* code);
+GList * todasReservas (Manager_Aeroportos* gestor);
 gboolean removeAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager);
 
 #endif

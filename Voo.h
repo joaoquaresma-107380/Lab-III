@@ -33,6 +33,7 @@ void setDestination(char* or, Voo* voo);
 void setAircraft(int or, Voo* voo);
 void setAirline(char* or, Voo* voo);
 void setTrackingURL(char* or, Voo* voo);
+int compararVoo(Voo* a, Voo* b);
 void destruirVoo(Voo* voo);
 
 #endif
