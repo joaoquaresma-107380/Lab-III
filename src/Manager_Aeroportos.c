@@ -27,10 +27,9 @@ Manager_Aeroportos* createManagerAeroportos(){
 
 // adicionar um aeroporto ao manager
 
-gboolean adicionaAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager){
-    gboolean g = g_hash_table_add(manager->tabela,aeroporto->code);
+void adicionaAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager){
+    g_hash_table_add(manager->tabela,aeroporto->code);
     manager->elems++;
-    return g;
 }
 
 // procurar um aeroporto pelo code
@@ -48,10 +47,9 @@ GList * todasReservas (Manager_Aeroportos* gestor){
 
 // remover um aeroporto do manager
 
-gboolean removeAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager){
-    gboolena g = g_hash_table_remove(manager,aeroporto->code);
+void removeAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager){
+    g_hash_table_remove(manager,aeroporto->code);
     manager->elems--;
-    return g;
 }
 
 #endif
