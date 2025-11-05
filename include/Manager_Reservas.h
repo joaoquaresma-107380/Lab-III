@@ -10,9 +10,9 @@ typedef struct manager_Reservas Manager_Reservas;
 
 void value_destroy_func(gpoint p);
 Manager_Reservas* createManagerReservas();
-gboolean adicionaReserva(Reserva* r, Manager_Reservas* manager);
+void adicionaReserva(Reserva* r, Manager_Reservas* manager);
 Reserva* procurarReserva(Manager_Reservas* gestor, int id);
 GList * todasReservas (Manager_Reservas* gestor);
-gboolean removeAeroporto(Reserva* r, Manager_Reservas* manager);
+void removeAeroporto(Reserva* r, Manager_Reservas* manager);
 
 #endif
