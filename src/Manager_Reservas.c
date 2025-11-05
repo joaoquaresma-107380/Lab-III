@@ -27,10 +27,9 @@ Manager_Reservas* createManagerReservas(){
 
 // adicionar uma reserva ao manager
 
-gboolean adicionaReserva(Reserva* reserva, Manager_Reservas* manager){
-    gboolean g = g_hash_table_add(manager->tabela,reserva->reservation_id);
+void adicionaReserva(Reserva* reserva, Manager_Reservas* manager){
+    g_hash_table_add(manager->tabela,reserva->reservation_id);
     manager->elems++;
-    return g;
 }
 
 // procurar uma reserva pelo reservation_id
@@ -48,10 +47,9 @@ GList * todasReservas (Manager_Reservas* gestor){
 
 // remover uma reserva do manager
 
-gboolean removeReserva(Reserva* reserva, Manager_Reservas* manager){
-    gboolena g = g_hash_table_remove(manager,reserva->reservation_id);
+void removeReserva(Reserva* reserva, Manager_Reservas* manager){
+    g_hash_table_remove(manager,reserva->reservation_id);
     manager->elems--;
-    return g;
 }
 
 #endif
