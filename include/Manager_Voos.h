@@ -1,6 +1,8 @@
 // Ficheiro Manager_Voos.h
 
 #include <Voo.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef Manager_Voos_H
 #define Manager_Voos_H
