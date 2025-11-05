@@ -16,7 +16,8 @@ typedef struct manager_voos {
 } Manager_Voos;
 
 // funçao que cria um array de voos
-void createManager_Voos (Manager_Voos* gestor) {
+void createManager_Voos () {
+    Manager_Voos* gestor = malloc(sizeof(Manager_Voos));
     gestor->sp = 0;
     gestor->size = 10;
     gestor->values = malloc(sizeof(int) * s->size);
