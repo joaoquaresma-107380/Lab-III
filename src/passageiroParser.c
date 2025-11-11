@@ -4,7 +4,7 @@
 Passageiro* tokensToPassageiro (char** tokens) {
     int n = 1;
     Passageiro* x;
-    x = createPassageiro(tokens[0],tokens[1], tokens[2], tokens[3], tokens[4],tokens[5],tokens[6],tokens[7]);
+    x = createPassageiro(tokens[0],tokens[1], tokens[2], stringToDate(tokens[3]), tokens[4],tokens[5],tokens[6],tokens[7]);
     return x;
     
 }
