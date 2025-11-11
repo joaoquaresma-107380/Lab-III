@@ -1,4 +1,3 @@
-
 /*Função parseLine que recebe uma linha e constroi um array de tokens*/
 
 char** parseLine(char* line) {
@@ -9,7 +8,7 @@ char** parseLine(char* line) {
     while (token) {
         if (strlen(token) > 0) {  // para ignorar espaços consecutivos
             n++;
-            tokens[1] = strcpy(token);
+            tokens[n] = strcpy(token);
         }
         token = strsep(&line, ","); // obter proximo token
     }
