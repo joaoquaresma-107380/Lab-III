@@ -1,3 +1,4 @@
+#include<stdio.h>
 #include <string.h>
 #include "AeroportoParser.h"
 #include "AeronaveParser.h"
@@ -27,9 +28,9 @@ void programa_principal(const char* dataSet, const char* comandos_exe) {
     Manager_Reservas* reservas = createManagerReservas();
     readFileReserva(reservations, reservas, voos, passageiros);
     fecharFicheiro(reservations);
-
-    // ja esta tudo na base de dados e corrigiddo
-    // agora é passar os comandos para as queries
+    FILE* comandos = abrirFicheiroLeitura(strcat(comandos_exe));
+    readFileComandos(comandos, aeroportos,voos, aeronaves);
+    fecharFicheiro(comandos);
 }
 
 
