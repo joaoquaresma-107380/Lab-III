@@ -42,15 +42,13 @@ void adicionaVoo(Manager_Voos* s, Voo* x) {
 }
 
 /**
- * função para procurar um voo num array dinâmico de voos
- * Retorna o índice do voo no array de voos
- * Caso não exista retorna -1
+
  */ 
-int procuraVoo(Manager_Voos* v,Voo* a) {
+Voo* procuraVoo(Manager_Voos* v,int id) {
     for (int i = 0;i<(v->size);i++) {
-        if (v->values[i] == a) return i;
+        if (getFlight_id(v->values[i]) == id) return v->values[i];
     }
-    return -1;
+    return NULL;
 }
 
 // função para remover de um voo num array dinâmico de voos
