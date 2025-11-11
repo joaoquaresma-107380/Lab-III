@@ -5,6 +5,7 @@
 #include "Manager_Aeroportos.h"
 #include "Manager_Aeronaves.h"
 #include "Manager_Voos.h"
+#include "Queries.h"
 #include "Data.h"
 
 typedef struct cmd {
