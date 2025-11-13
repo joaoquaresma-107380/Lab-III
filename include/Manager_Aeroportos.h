@@ -3,16 +3,16 @@
 #include <glib.h>
 #include <Aeroporto.h>
 
-#ifndef Manager_Aeroportos_H
-#define Manager_Aeroportos_H
+#ifndef MANAGER_AEROPORTOS_H
+#define MANAGER_AEROPORTOS_H
 
 typedef struct manager_Aeroportos Manager_Aeroportos;
 
-void value_destroy_func(gpoint p);
+void value_destroy_func_Aeroporto(gpointer p);
 Manager_Aeroportos* createManagerAeroportos();
-void adicionaAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager);
-Aeroporto* procurarReserva(Manager_Aeroportos* gestor, char* code);
-GList * todasReservas (Manager_Aeroportos* gestor);
-void removeAeroporto(Aeroporto* aeroporto, Manager_Aeroportos* manager);
+void adicionaAeroporto(Aeroporto* a, Manager_Aeroportos* manager);
+Aeroporto* procurarAeroporto(Manager_Aeroportos* gestor, char* code);
+GList * todosAeroportos(Manager_Aeroportos* gestor);
+void removeAeroporto(Aeroporto* a, Manager_Aeroportos* manager);
 
 #endif

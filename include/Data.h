@@ -21,9 +21,9 @@ void setMes(int novMes, Data* data);
 void setDia(int novDia, Data* data);
 void setHora(int novHora, Data* data);
 void setMinutos(int novMin, Data* data);
-void destruirData (Data* d);
-int validacaoData(char* token);
+void destroiData (Data* d);
 int compararDataHora(Data* x, Data* y);
 Data* stringToDate(char* str);
+int validacaoData(char* token);
 
 #endif

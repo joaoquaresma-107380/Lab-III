@@ -1,18 +1,18 @@
 // Ficheiro Manager_Reservas.h
 
 #include <glib.h>
-#include <Reserva.h>
+#include "Reserva.h"
 
-#ifndef Manager_Reservas_H
-#define Manager_Reservas_H
+#ifndef MANAGER_RESERVAS_H
+#define MANAGER_RESERVAS_H
 
 typedef struct manager_Reservas Manager_Reservas;
 
-void value_destroy_func(gpoint p);
+void value_destroy_func_Reserva(gpointer p);
 Manager_Reservas* createManagerReservas();
 void adicionaReserva(Reserva* r, Manager_Reservas* manager);
-Reserva* procurarReserva(Manager_Reservas* gestor, int id);
+Reserva* procurarReserva(Manager_Reservas* gestor, char* id);
 GList * todasReservas (Manager_Reservas* gestor);
-void removeAeroporto(Reserva* r, Manager_Reservas* manager);
+void removeReserva(Reserva* r, Manager_Reservas* manager);
 
 #endif
