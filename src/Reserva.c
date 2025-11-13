@@ -2,9 +2,6 @@
 
 #include "Reserva.h"
 
-#ifndef Reserva_C
-#define Rserva_C
-
 /**
  * Definição do módulo Reserva
  * O campo reservation_id indica o identificador único da reserva
@@ -19,9 +16,9 @@
  */
 
 struct reserva{
-    int reservation_id;
+    char* reservation_id; // falta mudar a reserva
     int num_flights_id;
-    int* flights_id;
+    char** flights_id;
     int document_number;
     char* seat;
     double price;
@@ -32,14 +29,16 @@ struct reserva{
 
 // Função de criação de uma Reserva
 
-Reserva* createReserva (int r_id, int num, int* f_id, int dnumber, char* lugar, float preco, char* boleano, char* b, char* qr) {
+Reserva* createReserva (char* r_id, int num, char** f_id, int dnumber, char* lugar, float preco, char* boleano, char* b, char* qr) {
     Reserva* a = malloc(sizeof (Reserva));
 
     a->reservation_id = r_id;
     a->num_flights_id = num;
-    a->flights_id = malloc(a->num_flights_id*sizeof(int));
+    a->flights_id = malloc(a->num_flights_id*sizeof(char*));
 
-    memcpy(a->flights_id,f_id,a->num_flights_id);
+    for(int i = 0;i<num;i++) {
+        a->flights_id[i] = strdup(f_id[i]);
+    }
  
     a->document_number = dnumber;
     a->seat = strdup(lugar);
@@ -53,8 +52,9 @@ Reserva* createReserva (int r_id, int num, int* f_id, int dnumber, char* lugar, 
 
 // Função que retorna o identificador único da reserva
 
-int getReservationId(Reserva* r) {
-    return r->reservation_id;
+char* getReservationId(Reserva* r) {
+    char* aux = strdup(r->reservation_id);
+    return aux;
 }
 
 // Função que retorna o número de identificadores únicos dos voos associados à reserva
@@ -65,10 +65,12 @@ int getNumFlightsId(Reserva* r) {
 
 // Função que retorna a lista dos identificadores únicos dos voos associados à reserva
 
-int* getFlightsId(Reserva* r) {
-     int* aux = malloc(r->num_flights_id*sizeof(int));
-     memcpy(aux,r->flights_id,r->num_flights_id);
-     return aux;
+char** getFlightsId(Reserva* r) {
+    char** aux = malloc(r->num_flights_id * sizeof(char*));
+    for(int i = 0;i<r->num_flights_id;i++) {
+        aux[i] = strdup(r->flights_id[i]);
+    }
+    return aux;
 }
 
 // Função que retorna o número do documento de identificação do passageiro associado à reserva
@@ -113,8 +115,8 @@ char* getQrCode (Reserva* r) {
 
 // Função que altera o valor do identificador único de uma reserva
 
-void setReservationId(Reserva* r, int r_id) {
-    r->reservation_id = r_id;
+void setReservationId(Reserva* r, char* id) {
+    r->reservation_id = strdup(id);
 }
 
 // Função que altera o valor do número de identificadores únicos dos voos de uma reserva
@@ -125,8 +127,10 @@ void setNumFlightsId(Reserva* r, int num){
 
 // Função que altera a lista de identificadores únicos dos voos de uma reserva
 
-void setFlightsId(Reserva* r, int* f_id, int num) {
-    mencpy(r->flights_id,f_id,num);
+void setFlightsId(Reserva* r, char** f_id, int num) {
+    for(int i = 0;i<num;i++) {
+        r->flights_id[i] = strdup(f_id[i]);
+    }
 }
 
 // Função que altera o valor do documento único do passageiro associado a uma reserva
@@ -177,4 +181,3 @@ void destroiReserva(Reserva* r){
     free(r);
 }
 
-#endif

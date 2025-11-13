@@ -1,48 +1,60 @@
-#include<stdio.h>
-#include <string.h>
+#include <glib.h>
 #include "AeroportoParser.h"
 #include "AeronaveParser.h"
 #include "ReservaParser.h"
 #include "VooParser.h"
-#include "PassageirosParser.h"
+#include "PassageiroParser.h"
+#include "ComandoParser.h"
 
 
-void programa_principal(const char* dataSet, const char* comandos_exe) {
-    FILE* airports = abrirFicheiroLeitura(strcat(dataSet, "/airports.csv"));
-    FILE* aircrafts = abrirFicheiroLeitura(strcat(dataSet, "/aircrafts.csv"));
-    FILE* passengers = abrirFicheiroLeitura(strcat(dataSet, "/passengers.csv"));
-    FILE* flights = abrirFicheiroLeitura(strcat(dataSet, "/flights.csv"));
-    FILE* reservations = abrirFicheiroLeitura(strcat(dataSet, "/reservations.csv"));
+int main(int argc, char* argv[]) {
+
+    if(argc != 3){
+        perror("Número de argumentos incorreto");
+        return 1;
+    }
+
+    char* dataSet = argv[1];
+    char* comandos_exe = argv[2];
+
+    const char* filename_airports = strcat(dataSet, "/airports.csv");
+    FILE* airports = abrirFicheiroLeitura(filename_airports);
+    
+    const char* filename_aircrafts = strcat(dataSet, "/aircrafts.csv");
+    FILE* aircrafts = abrirFicheiroLeitura(filename_aircrafts);
+    
+    const char* filename_passengers = strcat(dataSet, "/passengers.csv");
+    FILE* passengers = abrirFicheiroLeitura(filename_passengers);
+    
+    const char* filename_flights = strcat(dataSet, "/flights.csv");
+    FILE* flights = abrirFicheiroLeitura(filename_flights);
+
+    const char* filename_reservations = strcat(dataSet, "/reservations.csv");
+    FILE* reservations = abrirFicheiroLeitura(filename_reservations);
+
     Manager_Aeroportos* aeroportos = createManagerAeroportos();
     readFileAeroporto(airports, aeroportos);
     fecharFicheiro(airports);
-    Manager_Aeronaves* aeronaves = createManagerAeronaves();
+
+    GestorAviao* aeronaves = criarGestorAviao();
     readFileAeronave(aircrafts, aeronaves);
     fecharFicheiro(aircrafts);
-    Manager_Passageiros* passageiros = createManagerPassageiros();
+
+    GestorPassageiros* passageiros = createGestorPassageiros();
     readFilePassageiro(passengers, passageiros);
     fecharFicheiro(passengers);
-    Manager_Voos* voos = createManagerVoos();
+
+    Manager_Voos* voos = createManager_Voos();
     readFileVoo(flights, voos, aeronaves);
     fecharFicheiro(flights);
+
     Manager_Reservas* reservas = createManagerReservas();
     readFileReserva(reservations, reservas, voos, passageiros);
     fecharFicheiro(reservations);
-    FILE* comandos = abrirFicheiroLeitura(strcat(comandos_exe));
+
+    FILE* comandos = abrirFicheiroLeitura(comandos_exe);
     readFileComandos(comandos, aeroportos,voos, aeronaves);
     fecharFicheiro(comandos);
-}
-
-
-
-
-int main(char args[],int argc) {
-    if (args[0] == "progrma_principal") {
-        programa_principal(args[1],args[2]);
-    }
-    if(args[0] == "programa_iterativo") {
-
-    }
-    if()
     return 0;
 }
+

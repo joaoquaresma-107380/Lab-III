@@ -2,9 +2,6 @@
 
 #include "Voo.h"
 
-#ifndef Voo_C
-#define Voo_C
-
 /**
  * Definição do módulo Voo
  * O campo flight_id indica o identificador único do voo
@@ -22,16 +19,16 @@
  */
 
 struct voo{
-    int flight_id;
+    char* flight_id;
     Data* departure;
     Data* actual_departure;
     Data* arrival;
     Data* actual_arrival;
-    char* gate;
+    int gate;
     char* status;
     char* origin;
     char* destination;
-    int aircraft;
+    char* aircraft;
     char* airline;
     char* tracking_URL;
 };
@@ -40,7 +37,7 @@ struct voo{
  * Funcão de criação de um Voo
  */
 
- Voo* createVoo(int f, Data* d, Data* ad, Data* a, Data* aa, char* g, char* s, char* o, char* dest, int airc, char* airl, char* t_URL){
+ Voo* createVoo(char* f, Data* d, Data* ad, Data* a, Data* aa, int g, char* s, char* o, char* dest, char* airc, char* airl, char* t_URL){
     Voo* voo = malloc(sizeof(Voo));
 
     voo->flight_id = f;
@@ -48,11 +45,11 @@ struct voo{
     voo->actual_departure = cloneData(ad);
     voo->arrival = cloneData(a);
     voo->actual_arrival = cloneData(aa);
-    voo->gate = strdup(g);
+    voo->gate = g;
     voo->status = strdup(s);
     voo->origin = strdup(o);
     voo->destination = strdup(dest);
-    voo->aircraft = airc;
+    voo->aircraft = strdup(airc);
     voo->airline = strdup(airl);
     voo->tracking_URL = strdup(t_URL);
 
@@ -62,8 +59,9 @@ struct voo{
 /**
  * Função que retorna o identificador único do voo
  */
-int getFlight_id(Voo* voo){
-    return voo->flight_id;
+char* getFlight_id(Voo* voo){
+    char* aux = strdup(voo->flight_id);
+    return aux;
 }
 
 /**
@@ -101,9 +99,8 @@ Data* getActual_Arrival(Voo* voo){
 /**
  * Função que retorna a porta de embarque do voo
  */
-char* getGate(Voo* voo){
-    char* aux = strdup(voo->gate);
-    return aux;
+int getGate(Voo* voo){
+    return voo->gate;
 }
 
 /**
@@ -134,8 +131,9 @@ char* getDestination(Voo* voo){
  * Função que retorna o identificador único da aeronave utilizada no voo, i.e., tail
 number
  */
-int getAircraft(Voo* voo){
-    return voo->aircraft;
+char* getAircraft(Voo* voo){
+    char* aux = strdup(voo->aircraft);
+    return aux;
 }
 
 /**
@@ -157,8 +155,9 @@ char* getTrackingURL(Voo* voo){
 /**
  * Função que altera o valor do campo flight_id de um voo
  */
-void setFlight_id(int novoFlight_id, Voo* voo){
-    voo->flight_id = novoFlight_id;
+void setFlight_id(char* novoFlight_id, Voo* voo){
+    char* aux = strdup(novoFlight_id);
+    voo->flight_id = aux;
 }
 
 /**
@@ -196,9 +195,8 @@ void setActualArrival(Data* novoArrival, Voo* voo){
 /**
  * Função que altera o valor do campo gate de um voo
  */
-void setGate(char* gt, Voo* voo){
-    char* data = strdup(gt);
-    voo->gate = data;
+void setGate(int gt, Voo* voo){
+    voo->gate = gt;
 }
 
 /**
@@ -228,8 +226,9 @@ void setDestination(char* or, Voo* voo){
 /**
  * Função que altera o valor do campo aircraft de um voo
  */
-void setAircraft(int or, Voo* voo){
-    voo->aircraft = or;
+void setAircraft(char* or, Voo* voo){
+    char* aux = strdup(or);
+    voo->aircraft = aux;
 }
 
 /**
@@ -260,10 +259,32 @@ int compararVoo(Voo* a, Voo* b) {
     }
 }
 
+// Função de clone de um Voo
+Voo* cloneVoo(Voo* v){
+    Voo* new = malloc(sizeof(Voo));
+
+    new->flight_id = strdup(v->flight_id);
+    new->departure = cloneData(v->departure);
+    new->actual_departure = cloneData(v->actual_departure);
+    new->arrival = cloneData(v->arrival);
+    new->actual_arrival = cloneData(v->actual_arrival);
+    new->gate = v->gate;
+    new->status = strdup(v->status);
+    new->origin = strdup(v->origin);
+    new->destination = strdup(v->destination);
+    new->aircraft = strdup(v->aircraft);
+    new->airline = strdup(v->airline);
+    new->tracking_URL = strdup(v->tracking_URL);
+
+    return new;
+}
+
 /**
  * Função que apaga um Voo
  */
 void destruirVoo(Voo* voo){
+
+    free(voo->flight_id);
     destroiData(voo->departure);
     free(voo->departure);
     destroiData(voo->actual_departure);
@@ -272,13 +293,13 @@ void destruirVoo(Voo* voo){
     free(voo->arrival);
     destroiData(voo->actual_arrival);
     free(voo->actual_arrival);
-    free(voo->gate);
     free(voo->status);
     free(voo->origin);
     free(voo->destination);
+    free(voo->aircraft);
     free(voo->airline);
     free(voo->tracking_URL);
     free(voo);
 }
 
-#endif
+
