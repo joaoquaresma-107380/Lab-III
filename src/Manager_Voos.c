@@ -1,33 +1,50 @@
 // Ficheiro Manager_Voos.c
 #include "Manager_Voos.h"
 
-#ifndef Manager_Voos_C
-#define Manager_Voos_C
-
-typedef struct manager_voos {
+struct manager_Voos {
 	int size;
 	int sp;
 	Voo** values;
-} Manager_Voos;
+};
 
 // funçao que cria um array de voos
-void createManager_Voos () {
+Manager_Voos* createManager_Voos () {
     Manager_Voos* gestor = malloc(sizeof(Manager_Voos));
     gestor->sp = 0;
     gestor->size = 10;
     gestor->values = malloc(sizeof(Voo*) * gestor->size);
+    return gestor;
 }
 
 // funçao que duplica o tamanho do array de voos
 void dupVoos(Manager_Voos* s) {
-  int r = 0, i;
-  Voo* t[] = malloc(2 * s->size * sizeof(Voo*));
-  for (i = 0; i < s->size; i++) {
+  Voo** t = malloc(2 * s->size * sizeof(Voo*));
+  for (int i = 0; i < s->size; i++) {
     t[i] = s->values[i];
   }
   free(s->values);
   s->values = t;
   s->size *= 2;
+}
+// Função que retorna o sp (apontador para a última posição da Stack)
+int getSp(Manager_Voos* s){
+  return s->sp;
+}
+
+// Função que retorna o size da Stack
+int getSize(Manager_Voos* s){
+  return s->size;
+}
+
+// Função que retorna os voos da Stack
+Voo** getValues(Manager_Voos* s){
+  Voo** aux = malloc(s->size * sizeof(Voo*));
+
+  for(int i = 0; i < s->sp; i++){
+    aux[i] = cloneVoo(s->values[i]);
+  }
+
+  return aux;
 }
 
 // funçao que testa se o manager está vazio
@@ -44,19 +61,24 @@ void adicionaVoo(Manager_Voos* s, Voo* x) {
 /**
 
  */ 
-Voo* procuraVoo(Manager_Voos* v,int id) {
+Voo* procuraVoo(Manager_Voos* v,char* id) {
     for (int i = 0;i<(v->size);i++) {
-        if (getFlight_id(v->values[i]) == id) return v->values[i];
+        if (strcmp(getFlight_id(v->values[i]),id) == 0) return v->values[i];
     }
     return NULL;
 }
 
 // função para remover de um voo num array dinâmico de voos
 int removerVoo(Manager_Voos* gestor, Voo* a) {
-    int n = prucura(a);
-    if (n<0 || ManagerVazio(gestor)) return -1;
+    Voo* v = procuraVoo(gestor,getFlight_id(a));
+    if (v == NULL || ManagerVazio(gestor)) return -1;
     else {
-        for(int i = n;i<(gestor->size)-1;i++) {
+      int n = 0;
+      for(int j = 0;j<(gestor->size);j++) {
+        if(getFlight_id(a)==getFlight_id(v)) return n;
+        n++;
+      }
+      for(int i = n;i<(gestor->size)-1;i++) {
             gestor->values [i] = gestor->values [i+1];
         }
     }
@@ -135,9 +157,9 @@ void ordenaManager_Voos_Por_DataDeparture (Manager_Voos* v) {
 void ShowManager_Voos(Manager_Voos* v) {
     int i;
     printf("%d Items: ", v->sp);
-    for (i = 0; i <= v->sp; i++)
-        printf("%d ", v->values[i]);
-    putchar('\n');
+    for (i = 0; i <= v->sp; i++) {
+      printf("%s\n", getFlight_id(v->values[i]));
+    }
 }
 
-#endif
+

@@ -2,9 +2,6 @@
 
 #include "Aeroporto.h"
 
-#ifndef Aeroporto_C
-#define Aeroporto_C
-
 /**
  * Definição do módulo Aeroporto
  * O campo code indica o códifo IATA do aeroporto
@@ -22,15 +19,15 @@ struct aeroporto{
     char* name;
     char* city;
     char* country;
-    float latitude;
-    float longitude;
+    double latitude;
+    double longitude;
     char* icao;
     char* type;
 };
 
 // Função de criação de um aeroporto
 
-Aeroporto* createAeroporto(char* code, char* name, char* city, char* country, float latitude, float longitude, char* icao, char* type){
+Aeroporto* createAeroporto(char* code, char* name, char* city, char* country, double latitude, double longitude, char* icao, char* type){
     Aeroporto* new = malloc(sizeof(Aeroporto));
 
     new->code = strdup(code);
@@ -75,14 +72,14 @@ char* getCountry (Aeroporto* a) {
 
 // Função que retorna a latitude do aeroporto
 
-float getLatitude (Aeroporto* a) {
+double getLatitude (Aeroporto* a) {
     float aux = a->latitude;
     return aux;
 }
 
 // Função que retorna a longitude do aeroporto
 
-float getLongitude (Aeroporto* a) {
+double getLongitude (Aeroporto* a) {
     float aux = a->latitude;
     return aux;
 }
@@ -131,13 +128,13 @@ void setCountry(Aeroporto* a, char* pais) {
 
 // Função que altera a latitude de um aeroporto
 
-void setLatitude(Aeroporto* a, float lat) {
+void setLatitude(Aeroporto* a, double lat) {
     a->latitude = lat;
 }
 
 // Função que altera a longitude de um aeroporto
 
-void setLongitude(Aeroporto* a, float lon) {
+void setLongitude(Aeroporto* a, double lon) {
     a->longitude = lon;
 }
 
@@ -168,5 +165,4 @@ void destroiAeroporto(Aeroporto* arp){
     free(arp);
 }
 
-#endif
 

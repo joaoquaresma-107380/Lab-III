@@ -1,25 +1,22 @@
 // Ficheiro Manager_Reservas.c
-#include <glib.h>
-#include <Reservas.h>
 
-#ifndef Manager_Reservas_C
-#define Manager_Reservas_C
+#include <Manager_Reservas.h>
 
 struct manager_Reservas{
     GHashTable* tabela;
     int elems;
 };
 
-void value_destroy_func(gpoint p){
+void value_destroy_func_Reserva(gpointer p){
     Reserva* new = (Reserva*) p;
-    destruirReserva(new);
+    destroiReserva(new);
 };
 
 // criar um manager de reserva
 
 Manager_Reservas* createManagerReservas(){
     Manager_Reservas* manager = malloc(sizeof(Manager_Reservas));
-    GHashTable* tabela = g_hash_table_new_full(g_str_hash,g_str_equal,free,value_destroy_func);
+    GHashTable* tabela = g_hash_table_new_full(g_str_hash,g_str_equal,free,value_destroy_func_Reserva);
     manager->tabela = tabela;
     manager->elems = 0;
     return manager;
@@ -28,28 +25,29 @@ Manager_Reservas* createManagerReservas(){
 // adicionar uma reserva ao manager
 
 void adicionaReserva(Reserva* reserva, Manager_Reservas* manager){
-    g_hash_table_add(manager->tabela,reserva->reservation_id);
+    char* id = getReservationId(reserva);
+    g_hash_table_insert(manager->tabela,id,reserva);
     manager->elems++;
 }
 
 // procurar uma reserva pelo reservation_id
 
-Reserva* procurarReserva(Manager_Reservas* gestor, int id){
-    return g_hash_table_lookup(g->tabela, id);
+Reserva* procurarReserva(Manager_Reservas* gestor, char* id){
+    return g_hash_table_lookup(gestor->tabela, id);
 }
 
 // retornar todas as reservas 
 
 GList * todasReservas (Manager_Reservas* gestor){
-    return g_hash_table_get_values(g->tabela);
+    return g_hash_table_get_values(gestor->tabela);
 
 }
 
 // remover uma reserva do manager
 
 void removeReserva(Reserva* reserva, Manager_Reservas* manager){
-    g_hash_table_remove(manager,reserva->reservation_id);
+    char* id = getReservationId(reserva);
+    g_hash_table_remove(manager->tabela,id);
     manager->elems--;
 }
 
-#endif

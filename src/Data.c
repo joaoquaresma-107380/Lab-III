@@ -2,9 +2,6 @@
 
 #include "Data.h"
 
-#ifndef Data_C
-#define Data_C
-
 /**
  * Definição do módulo Data
  */
@@ -118,8 +115,74 @@ void setMinutos(int novMin, Data* data){
 /**
  * Função que valida uma data
  */
-void destruirData (Data* d) {
+void destroiData (Data* d) {
     free(d);
+}
+
+/**
+ *  funçao de comparaçao de datasHoras que retorna 1 se a segunda data for mais recente,
+ * -1 se a primeira data for mais recente e 0 se forem iguais 
+ * */
+int compararDataHora(Data* x, Data* y) {
+    if (x->ano == y->ano) {
+        if (x->mes == y->mes) {
+            if (x->dia == y->dia) {
+                if (x->hora == y->hora) {
+                    if (x->min == y->min) {
+                        return 0;
+                    }
+                    else {
+                        if (x->min < y->min) return 1;
+                        else return -1;
+                    }
+                }
+                else {
+                    if (x->hora < y->hora) return 1;
+                    else return -1;
+                }
+            }
+            else {
+                if (x->dia < y->dia) return 1;
+                else return -1;
+            }
+        }
+        else {
+            if (x->mes < y->mes) return 1;
+            else return -1;
+        }
+    }
+    else {
+        if (x->ano < y->ano) return 1;
+        else return -1;
+    }   
+}
+
+/**
+ * Função que transforma uma string numa data preenchendo todos os campos 
+ */
+Data* stringToDate(char* str){
+  
+    Data* data = createData(0000,00,00,0,0);
+    int ano, mes, dia, hora, min;
+    int tamanho = strlen(str);
+
+    if(tamanho == 10){
+        sscanf(str,"%4d-%2d-%2d", &ano, &mes, &dia);
+        data->ano = ano;
+        data->mes = mes;
+        data->dia = dia;
+    }
+
+    if(tamanho == 18){
+        sscanf(str, "%4d-%2d-%2d %2d : %2d", &ano,&mes,&dia,&hora,&min);
+        data->ano = ano;
+        data->mes = mes;
+        data->dia = dia;
+        data->hora = hora;
+        data->min = min;
+    }
+
+    return data;
 }
 
 /**
@@ -128,17 +191,15 @@ void destruirData (Data* d) {
 
 int validacaoData(char* token) {
     int n = 0;
-    if (strlen(token) != 10 && strlen(token) != 18 && strlen(token) != 4) {
+    if (strlen(token) != 10 && strlen(token) != 18) {
         n++;
     }
-    char* mes;
-    char* ano;
-    char* dia;
-    char* hora;
-    char* min;
-    if (strlen(token) == 4) {
-        if (atoi(token)>2025) n++;
-    }
+    char* mes = malloc(2 * sizeof(char));
+    char* ano = malloc(4 * sizeof(char));
+    char* dia = malloc(2 * sizeof(char));
+    char* hora = malloc(2 * sizeof(char));
+    char* min = malloc(2 * sizeof(char));
+
     if (strlen(token) == 10) {
         if (token[4] != '-' || token[7] != '-') {
             n++;
@@ -196,60 +257,3 @@ int validacaoData(char* token) {
     }
 }
 
-/**
- *  funçao de comparaçao de datasHoras que retorna 1 se a segunda data for mais recente,
- * 1 se a primeira data for mais recente e 0 se forem iguais 
- * */
-int compararDataHora(Data* x, Data* y) {
-    if (x->ano > y->ano) return 1;
-    if (x->ano < y->ano) return -1;
-    if (x->ano == y->ano) {
-        if (x->mes > y->mes) return 1;
-        if (x->mes < y->mes) return -1;
-        if (x->mes == y->mes) {
-            if (x->dia > y->dia) return 1;
-            if (x->dia < y->dia) return -1;
-            if (x->dia == y->dia) {
-                if (x->hora > y->hora) return 1;
-                if (x->hora < y->hora) return -1;
-                if (x->hora == y->hora) {
-                    if (x->min > y->min) return 1;
-                    if (x->min < y->min) return -1;
-                    if (x->min == y->min) {
-                        return 0;
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * Função que transforma uma string numa data preenchendo todos os campos 
- */
-Data* stringToDate(char* str){
-  
-    Data* data = createData(0000,00,00,0,0);
-    int ano, mes, dia, hora, min;
-    int tamanho = strlen(str), j = 0;
-
-    if(strlen(str) == 10){
-        sscanf(str,"%4d-%2d-%2d", &ano, &mes, &dia);
-        data->ano = ano;
-        data->mes = mes;
-        data->dia = dia;
-    }
-
-    if(strlen(str) == 18){
-        sscanf(str, "%4d-%2d-%2d %2d : %2d", &ano,&mes,&dia,&hora,&min);
-        data->ano = ano;
-        data->mes = mes;
-        data->dia = dia;
-        data->hora = hora;
-        data->min = min;
-    }
-
-    return data;
-}
-
-#endif
