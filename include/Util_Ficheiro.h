@@ -10,6 +10,6 @@ FILE* abrirFicheiroLeitura(const char* filename);
 FILE* abrirFicheiroEscrita(const char* filename);
 void fecharFicheiro(FILE* stream);
 char* tokensToString(char** tokens);
-void escreveFicheiro(char* str, FILE* stream);
+int escreveFicheiro(char* str, FILE* stream);
 
 #endif 

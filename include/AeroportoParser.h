@@ -1,5 +1,4 @@
 #include "Util_Ficheiro.h"
-#include "UtilsParser.h"
 #include "ValidacaoAeroporto.h"
 
 #ifndef AEROPORTO_PARSER_H
