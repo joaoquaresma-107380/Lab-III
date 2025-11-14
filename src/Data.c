@@ -161,8 +161,8 @@ int compararDataHora(Data* x, Data* y) {
  * Função que transforma uma string numa data preenchendo todos os campos 
  */
 Data* stringToDate(char* str){
-  
     Data* data = createData(0000,00,00,0,0);
+    if (strcmp(str, "N/A") == 0) return data;
     int ano, mes, dia, hora, min;
     int tamanho = strlen(str);
 
@@ -173,8 +173,8 @@ Data* stringToDate(char* str){
         data->dia = dia;
     }
 
-    if(tamanho == 18){
-        sscanf(str, "%4d-%2d-%2d %2d : %2d", &ano,&mes,&dia,&hora,&min);
+    if(tamanho == 16){
+        sscanf(str, "%4d-%2d-%2d %2d:%2d", &ano,&mes,&dia,&hora,&min);
         data->ano = ano;
         data->mes = mes;
         data->dia = dia;
@@ -191,7 +191,7 @@ Data* stringToDate(char* str){
 
 int validacaoData(char* token) {
     int n = 0;
-    if (strlen(token) != 10 && strlen(token) != 18) {
+    if (strlen(token) != 10 && strlen(token) != 16) {
         n++;
     }
     char* mes = malloc(2 * sizeof(char));
@@ -200,60 +200,39 @@ int validacaoData(char* token) {
     char* hora = malloc(2 * sizeof(char));
     char* min = malloc(2 * sizeof(char));
 
-    if (strlen(token) == 10) {
-        if (token[4] != '-' || token[7] != '-') {
+    ano[0] = token[0];
+    ano[1] = token[1];
+    ano[2] = token[2];
+    ano[3] = token[3];
+    mes[0] = token[5];
+    mes[1] = token[6];
+    dia[0] = token[8];
+    dia[1] = token[9];
+    
+    if (token[4] != '-' || token[7] != '-') {
             n++;
-        }
-        for(int i = 0;i<strlen(token);i++) {
-            if(i<4) {
-                ano[i] = token[i];
-            }
-            if(i>4 && i<7) {
-                mes[i] = token[i];
-            }
-            if(i>7) {
-                dia[i] = token[i];
-            }
         }
         if (atoi(ano)>2025) n++;
         if(atoi(ano)==2025 && atoi(mes)>9) n++;
         if (atoi(mes)>12 || atoi(mes)<1) n++;
         if(atoi(dia)>31 || atoi(dia)<1) n++;
-    }
-    if (strlen(token) == 18) {
-        if (token[4] != '-' || token[7] != '-' 
-        || token[10] != ' ' || token[13] != ' '
-        || token[14] != ':' || token[15] != ' ') {
+        
+    if (strlen(token) == 16) {
+        if (token[10] != ' ' || token[13] != ':') {
             n++;
         }
-        for(int i = 0;i<strlen(token);i++) {
-            if(i<4) {
-                ano[i] = token[i];
-            }
-            if(i>4 && i<7) {
-                mes[i] = token[i];
-            }
-            if(i>7 && i<10) {
-                dia[i] = token[i];
-            }
-            if(i>10 && i<13) {
-                hora[i] = token[i];
-            }
-            if(i>15 && i<18) {
-                min[i] = token[i];
-            }
-        }
-        if (atoi(ano)>2025) n++;
-        if (atoi(mes)>12 || atoi(mes)<1) n++;
-        if(atoi(dia)>31 || atoi(dia)<1) n++;
+        hora[0] = token[11];
+        hora[1] = token[12];
+        min[0] = token[14];
+        min[1] = token[15];
         if(atoi(hora)>23 || atoi(hora)<0) n++;
         if(atoi(min)>59 || atoi(min)<0) n++;
     }
-    if (n>0) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
+    free(mes);
+    free(ano);
+    free(dia);
+    free(hora);
+    free(min);
+    return n;
 }
 

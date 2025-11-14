@@ -9,7 +9,8 @@ struct cmd {
 void processaComando(Manager_Aeroportos* aeroportos, GestorAviao* aeronaves, Manager_Voos* voos, Cmd* cmd, int n) {
     char aux[20];
     if (snprintf(aux,20,"comando%d_output.txt",n)<0) perror("Erro na copia para abertura do ficheiro de comandos");
-    FILE* resultados = abrirFicheiroEscrita(aux);
+    const char* filename_resultados = strcat("resultados/", aux);
+    FILE* resultados = abrirFicheiroEscrita(filename_resultados);
     if(cmd->comando==1) {
         if(cmd->nargs>1) printf("Comando incorreto");
         querie1 (aeroportos, cmd->args[0] , resultados);
