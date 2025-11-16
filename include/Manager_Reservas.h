@@ -12,7 +12,7 @@ void value_destroy_func_Reserva(gpointer p);
 Manager_Reservas* createManagerReservas();
 void adicionaReserva(Reserva* r, Manager_Reservas* manager);
 Reserva* procurarReserva(Manager_Reservas* gestor, char* id);
-GList * todasReservas (Manager_Reservas* gestor);
+void destruirManager_Reservas(Manager_Reservas* mr);
 void removeReserva(Reserva* r, Manager_Reservas* manager);
 
 #endif

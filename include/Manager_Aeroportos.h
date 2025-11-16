@@ -12,7 +12,7 @@ void value_destroy_func_Aeroporto(gpointer p);
 Manager_Aeroportos* createManagerAeroportos();
 void adicionaAeroporto(Aeroporto* a, Manager_Aeroportos* manager);
 Aeroporto* procurarAeroporto(Manager_Aeroportos* gestor, char* code);
-GList * todosAeroportos(Manager_Aeroportos* gestor);
+void destruirManager_Aeroportos(Manager_Aeroportos* map);
 void removeAeroporto(Aeroporto* a, Manager_Aeroportos* manager);
 
 #endif

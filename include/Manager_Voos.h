@@ -9,6 +9,7 @@ typedef struct manager_Voos Manager_Voos;
 
 Manager_Voos* createManager_Voos ();
 void dupVoos(Manager_Voos* s);
+void destruirManager_Voos(Manager_Voos* voos);
 int getSp(Manager_Voos* s);
 int getSize(Manager_Voos* s);
 Voo** getValues(Manager_Voos* s);

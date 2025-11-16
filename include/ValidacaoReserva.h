@@ -5,6 +5,7 @@
 #ifndef VALIDACAO_RESERVA_H
 #define VALIDACAO_RESERVA_H
 
+void eliminaCaracteresPontas(char* s);
 int tamanhoArrayFlights(char* token);
 char** tokenToArrayChar(char* token);
 int validacaoSintaticaReserva(char** tokens);
