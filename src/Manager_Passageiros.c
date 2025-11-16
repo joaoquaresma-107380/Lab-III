@@ -53,4 +53,6 @@ void removePassageiro(Passageiro* a, GestorPassageiros* manager){
     int* key = malloc(sizeof(int));
     key = &codigo;
     g_hash_table_remove(manager->tabela,key);
+
+    destruirPassageiro(a);
 }

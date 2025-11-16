@@ -194,21 +194,26 @@ int validacaoData(char* token) {
     if (strlen(token) != 10 && strlen(token) != 16) {
         n++;
     }
-    char* mes = malloc(2 * sizeof(char));
-    char* ano = malloc(4 * sizeof(char));
-    char* dia = malloc(2 * sizeof(char));
-    char* hora = malloc(2 * sizeof(char));
-    char* min = malloc(2 * sizeof(char));
+    char* mes = malloc(3 * sizeof(char));
+    char* ano = malloc(5 * sizeof(char));
+    char* dia = malloc(3 * sizeof(char));
+    char* hora = malloc(3 * sizeof(char));
+    char* min = malloc(3 * sizeof(char));
 
     ano[0] = token[0];
     ano[1] = token[1];
     ano[2] = token[2];
     ano[3] = token[3];
+    ano[4] = '\0';
+
     mes[0] = token[5];
     mes[1] = token[6];
+    mes[2] = '\0';
+
     dia[0] = token[8];
     dia[1] = token[9];
-    
+    dia[2] = '\0';
+
     if (token[4] != '-' || token[7] != '-') {
             n++;
         }
@@ -223,8 +228,12 @@ int validacaoData(char* token) {
         }
         hora[0] = token[11];
         hora[1] = token[12];
+        hora[2] = '\0';
+
         min[0] = token[14];
         min[1] = token[15];
+        min[2] = '\0';
+        
         if(atoi(hora)>23 || atoi(hora)<0) n++;
         if(atoi(min)>59 || atoi(min)<0) n++;
     }

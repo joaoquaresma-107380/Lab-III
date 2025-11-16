@@ -36,10 +36,14 @@ Aeroporto* procurarAeroporto(Manager_Aeroportos* gestor, char* code){
     return g_hash_table_lookup(gestor->tabela, code);
 }
 
-// retornar todos os aeroportos
+// liberta toda a memória alocada para os aeroportos
 
-GList * todosAeroportos (Manager_Aeroportos* gestor){
-    return g_hash_table_get_values(gestor->tabela);
+void destruirManager_Aeroportos(Manager_Aeroportos* map){
+    if (map == NULL) return;
+
+    if(map->tabela != NULL) g_hash_table_destroy(map->tabela);
+    
+    free (map);
 }
 
 // remover um aeroporto do manager

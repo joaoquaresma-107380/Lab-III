@@ -2,7 +2,7 @@
 #include "ValidacaoAeronave.h"
 
 Aeronave* tokensToAeronave (char** tokens) {
-    Aeronave* x = criarAviao(tokens[0],tokens[1], tokens[2], atoi(tokens[3]), atoi(tokens[4]),atoi(tokens[5]),0);
+    Aeronave* x = criarAviao(tokens[0],tokens[2], tokens[4], atoi(tokens[6]), atoi(tokens[8]),atoi(tokens[10]),0);
     return x; 
 }
 
@@ -11,7 +11,7 @@ void readFileAeronave(FILE* stream, GestorAviao* ma) {
     char* lineAux = NULL;
     size_t read;
     size_t len; // Sera definido pela funcao getline quando alocar espaço para a string
-    FILE* aircraftsErrors = abrirFicheiroEscrita("datasetErros/aircrafts.csv");
+    FILE* aircraftsErrors = abrirFicheiroEscrita("dataset-errors/aircrafts.csv");
     if ((read = getline(&line, &len, stream)) != -1) {
         if(escreveFicheiro(line, aircraftsErrors) < 0) perror("Erro na escrita para aircraftsErrors.csv");
            
@@ -23,10 +23,15 @@ void readFileAeronave(FILE* stream, GestorAviao* ma) {
                     addAviao(ma,a);
                 }
                 else escreveFicheiro(line, aircraftsErrors);
+
+                 int length = tamanhoTokens(tokens);
+                for(int i = 0; i < length; i++) free(tokens[i]);
+                free(lineAux);
+                free(tokens);
             }
 
     }
-    free(lineAux);
+
     free(line); // preciso libertar a mem´oria alocada
     fecharFicheiro(aircraftsErrors);
 }

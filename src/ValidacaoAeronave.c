@@ -3,9 +3,9 @@
 int validacaoSintaticaAeronave(char** tokens) {
     int n = 0;
     // validar ano
-    if (strlen(tokens[3]) != 4) n++;
+    if (strlen(tokens[6]) != 4) n++;
     else {
-        if (atoi(tokens[3])>2025 || atoi(tokens[3])<1970) n++;
+        if (atoi(tokens[6])>2025 || atoi(tokens[6])<1970) n++;
     }
     return n;
 }

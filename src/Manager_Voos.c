@@ -26,6 +26,20 @@ void dupVoos(Manager_Voos* s) {
   s->values = t;
   s->size *= 2;
 }
+
+// liberta toda a memória alocada para os voos
+void destruirManager_Voos(Manager_Voos* voos){
+  if(voos == NULL) return;
+
+  if(voos->values == NULL) return;
+
+  for(int i = 0; i < voos->sp;i++){
+    destruirVoo(voos->values[i]);
+  }
+  free(voos->values);
+  free(voos);
+}
+
 // Função que retorna o sp (apontador para a última posição da Stack)
 int getSp(Manager_Voos* s){
   return s->sp;

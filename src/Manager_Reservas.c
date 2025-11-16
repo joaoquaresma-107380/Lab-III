@@ -36,11 +36,14 @@ Reserva* procurarReserva(Manager_Reservas* gestor, char* id){
     return g_hash_table_lookup(gestor->tabela, id);
 }
 
-// retornar todas as reservas 
+// liberta toda a memória alocada para os aeroportos
 
-GList * todasReservas (Manager_Reservas* gestor){
-    return g_hash_table_get_values(gestor->tabela);
+void destruirManager_Reservas(Manager_Reservas* mr){
+    if (mr == NULL) return;
 
+    if(mr->tabela != NULL) g_hash_table_destroy(mr->tabela);
+    
+    free (mr);
 }
 
 // remover uma reserva do manager

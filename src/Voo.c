@@ -286,13 +286,9 @@ void destruirVoo(Voo* voo){
 
     free(voo->flight_id);
     destroiData(voo->departure);
-    free(voo->departure);
     destroiData(voo->actual_departure);
-    free(voo->actual_departure);
     destroiData(voo->arrival);
-    free(voo->arrival);
     destroiData(voo->actual_arrival);
-    free(voo->actual_arrival);
     free(voo->status);
     free(voo->origin);
     free(voo->destination);

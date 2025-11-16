@@ -5,19 +5,19 @@ int validacaoSintaticaAeroporto(char** tokens) {
 
     // Validar tipo do aeroporto
    
-    if((strcmp(tokens[7],"small_airport")!=0) 
-    && (strcmp(tokens[7],"medium_airport")!=0) 
-    && (strcmp(tokens[7],"large_airport")!=0)
-    && (strcmp(tokens[7],"heliport")!=0)
-    && (strcmp(tokens[7],"seaplane_base")!=0)) n++;
+    if((strcmp(tokens[14],"small_airport")!=0) 
+    && (strcmp(tokens[14],"medium_airport")!=0) 
+    && (strcmp(tokens[14],"large_airport")!=0)
+    && (strcmp(tokens[14],"heliport")!=0)
+    && (strcmp(tokens[14],"seaplane_base")!=0)) n++;
 
 
     // Validar longitude do aeroporto
-    char* aux_longitude = strdup(tokens[5]);
+    char* aux_longitude = strdup(tokens[10]);
     char* aux_longitude_original = aux_longitude;
 
     // Verifica se a longitude está entre -180 e 180
-    if (atof(tokens[5])<-180 || atof(tokens[5])> 180) n++; 
+    if (atof(tokens[10])<-180 || atof(tokens[10])> 180) n++; 
     
     // Verifica os dígitos antes do ponto
     char* pr_parte = strsep(&aux_longitude,".");
@@ -43,11 +43,11 @@ int validacaoSintaticaAeroporto(char** tokens) {
     free(aux_longitude_original);
 
     // Validar latitude do aeroporto
-    char* aux_latitude = strdup(tokens[4]);
+    char* aux_latitude = strdup(tokens[8]);
     char* aux_latitude_original = aux_latitude;
 
     // Verifica se a latitude está entre -90 e 90
-    if(atof(tokens[4])<-90 || atof(tokens[4]) > 90) n++;
+    if(atof(tokens[8])<-90 || atof(tokens[8]) > 90) n++;
 
     // Verifica os dígitos antes do ponto
     char* pr_parte_latitude = strsep(&aux_latitude,".");
