@@ -16,7 +16,7 @@ void destruirGestorAeronaves(GestorAviao* g);
 void addAviao(GestorAviao* g, Aeronave* a);
 Aeronave* encontrarAviao(GestorAviao* g,char* id);
 GList * todasOsAvioes (GestorAviao *g);
-void ordenarAvioesPorVoos(GList** lista);
+GList * ordenarAvioesPorVoos(GList* lista);
 void removeAeronave(Aeronave* a, GestorAviao* manager);
 
 #endif
