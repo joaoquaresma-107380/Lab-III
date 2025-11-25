@@ -81,9 +81,9 @@ static gint compararAvioes (gconstpointer a, gconstpointer b){
 
 // ordenar os avioes por voos 
 
-void ordenarAvioesPorVoos(GList** lista){
-    if (!lista || !*lista) return;
-    *lista = g_list_sort(*lista,compararAvioes);
+GList* ordenarAvioesPorVoos(GList* lista){
+    if (!lista) return NULL;
+    return g_list_sort(lista,compararAvioes);
 
 }
 

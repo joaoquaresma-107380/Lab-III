@@ -33,15 +33,27 @@ int validacaoSintaticaVoo(char** tokens) {
 int validacaoLogicaVoo(char** tokens, GestorAviao* mae) { // preciso manager aeronaves
     int n = 0;
     if (strcmp(tokens[14],tokens[16]) == 0) n++;
-    if (compararDataHora(stringToDate(tokens[2]),stringToDate(tokens[6])) != 1) n++;
-    if (compararDataHora(stringToDate(tokens[4]),stringToDate(tokens[8])) != 1) n++;
+
+    Data* departure = stringToDate(tokens[2]);
+    Data* arrival = stringToDate(tokens[6]);
+    Data* actual_departure = stringToDate(tokens[4]);
+    Data* actual_arrival = stringToDate(tokens[8]);
+    
+    if (compararDataHora(departure,arrival) != 1) n++;
+    if (compararDataHora(actual_departure,actual_arrival) != 1) n++;
     if (encontrarAviao(mae,tokens[18]) == NULL) n++;
     if(strcmp(tokens[13],"Cancelled") == 0
         && (strcmp(tokens[7],"N/A") != 0
             || strcmp(tokens[9],"N/A") != 0)) n++;
     if(strcmp(tokens[13],"Delayed") == 0
-        && (compararDataHora(stringToDate(tokens[2]),stringToDate(tokens[4])) == -1
-            || compararDataHora(stringToDate(tokens[6]),stringToDate(tokens[8])) == -1)) n++;
+        && (compararDataHora(departure,actual_departure) == -1
+            || compararDataHora(arrival,actual_arrival) == -1)) n++;
+
+            destroiData(departure);
+            destroiData(arrival);
+            destroiData(actual_departure);
+            destroiData(actual_arrival);
+            
     return n;
 }
 

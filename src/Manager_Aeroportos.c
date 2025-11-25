@@ -53,4 +53,3 @@ void removeAeroporto(Aeroporto* a, Manager_Aeroportos* manager){
     g_hash_table_remove(manager->tabela,codigo);
     manager->elems--;
 }
-

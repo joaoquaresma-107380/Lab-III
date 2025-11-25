@@ -2,6 +2,8 @@
 
 // Função que elimina as pontas
 void eliminaCaracteresPontas(char* s){
+    if(s == NULL) return;
+
         int i = 0;
         for(;i<strlen(s)-2;i++) {
             s[i] = s[i+1];
@@ -20,54 +22,57 @@ int tamanhoArrayFlights(char* token) {
 }
 
 char** tokenToArrayChar(char* token) {
+    if(token == NULL) return NULL;
+
     int n = tamanhoArrayFlights(token);
 
     char** array = malloc(n*sizeof(char*));
-    char* aux = strdup(token);
-    char* aux_free = aux;
+    char* original = strdup(token);
+    char* aux_free = original;
 
-    eliminaCaracteresPontas(aux);
+    eliminaCaracteresPontas(original);
     
-    char* primeiro = strsep(&aux, ",");
+    char* first = strsep(&original, ",");
 
-    if(aux == NULL) {
+    if(original == NULL) {
         // so tem 1 voo
-        eliminaCaracteresPontas(primeiro);
-        array[0] = strdup(primeiro);
-
-        printf("PrimeiroPrint:%s tamanho array 0: %ld e %d\n",array[0],strlen(array[0]),tamanhoArrayFlights(token));
+        eliminaCaracteresPontas(first);
+        array[0] = strdup(first);
     }
     else{ // tem 2 voos
-        eliminaCaracteresPontas(primeiro);
-        eliminaCaracteresPontas(aux);
+        eliminaCaracteresPontas(first);
+        eliminaCaracteresPontas(original);
         int i = 0;
-        for(;i<strlen(aux)-1;i++) {
-            aux[i] = aux[i+1];
+        for(;i<strlen(original)-1;i++) {
+            original[i] = original[i+1];
         }
-        aux[i] = '\0';
-        array[0] = strdup(primeiro);
-        array[1] = strdup(aux);
-
-        printf("PrimeiroPrint:%s %s tamanho array 0: %ld tamanho array 1: %ld e %d\n",array[0],array[1],strlen(array[0]),strlen(array[1]),tamanhoArrayFlights(token));
+        original[i] = '\0';
+        array[0] = strdup(first);
+        array[1] = strdup(original);
     }
     free(aux_free);
     return array;
 }
 
-int validacaoSintaticaReserva(char** tokens) {
-    int n = 0;
+int validacaoSintaticaReserva(char** tokens) { // esta funcao está a modificar o tokens
+    if(tokens == NULL) return 1;
 
+    int n = 0;
     
     // validar lista de flights id
-    char* aux = strdup(tokens[2]);
-    eliminaCaracteresPontas(aux);
+    /*char* aux = strdup(tokens[2]);
+
     char* aux_free = aux;
 
+    eliminaCaracteresPontas(aux);
+
     char* primeiro = strsep(&aux, ",");
+
     if(aux == NULL) {
         // so tem 1 voo
         eliminaCaracteresPontas(primeiro);
         if(validarVooId(primeiro) != 0) n++;
+       
     }
     else{ // tem 2 voos
         eliminaCaracteresPontas(primeiro);
@@ -78,11 +83,24 @@ int validacaoSintaticaReserva(char** tokens) {
         }
         aux[i] = '\0';
         if(validarVooId(primeiro) != 0 || validarVooId(aux) != 0) n++;
+      
         
     }
+    free(aux_free);*/
+    int length = tamanhoArrayFlights(tokens[2]);
+    char** aux = tokenToArrayChar(tokens[2]);
 
-    free(aux_free);
-
+    if (length != 1 && length != 2) {
+        n++;
+        return n;
+    }
+    if(length == 1) {
+        if(validarVooId(aux[0]) != 0) n++;
+    }
+    else {
+        printf("%s;%s  ",aux[0],aux[1]);
+        if(validarVooId(aux[0]) != 0 || validarVooId(aux[1]) != 0) n++;
+    }
 
     // validar identificador reserva
     if(strlen(tokens[0])!=10) n++;
@@ -117,12 +135,14 @@ int validacaoLogicaReserva(char** tokens, Manager_Voos* mv, GestorPassageiros* m
     int length = tamanhoArrayFlights(tokens[2]);
     char** aux = tokenToArrayChar(tokens[2]);
 
-    printf("%s %s %d\n",aux[0],aux[1],tamanhoArrayFlights(tokens[2]));
-    if (!(length == 1 || length == 2)) n++;
+    if (!(length == 1 || length == 2)) {
+        n++;
+        return n;
+    }
     if(length == 1) {
         if (procuraVoo(mv,aux[0]) == NULL) n++;
     }
-    if(length == 2) {
+    else {
         if ((procuraVoo(mv,aux[0]) == NULL)
             || (procuraVoo(mv,aux[1]) == NULL)) n++;
         else {
@@ -130,11 +150,12 @@ int validacaoLogicaReserva(char** tokens, Manager_Voos* mv, GestorPassageiros* m
         }
     }   
     if (encontrarPassageiro(mp,atoi(tokens[4]))==NULL) n++;
+    
     return n;
 }
 
 
 int validacaoReserva(char** tokens, Manager_Voos* mv, GestorPassageiros* mp) { // preciso receber manager voos e manager passageiros
-    int n = validacaoSintaticaReserva(tokens); // + validacaoLogicaReserva(tokens,mv,mp);
+    int n = validacaoSintaticaReserva(tokens) + validacaoLogicaReserva(tokens,mv,mp);
     return n;
 }

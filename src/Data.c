@@ -116,7 +116,10 @@ void setMinutos(int novMin, Data* data){
  * Função que valida uma data
  */
 void destroiData (Data* d) {
+    if(d){
     free(d);
+    }
+    
 }
 
 /**
@@ -124,6 +127,8 @@ void destroiData (Data* d) {
  * -1 se a primeira data for mais recente e 0 se forem iguais 
  * */
 int compararDataHora(Data* x, Data* y) {
+    if(!x || !y) return 0;
+
     if (x->ano == y->ano) {
         if (x->mes == y->mes) {
             if (x->dia == y->dia) {
@@ -161,6 +166,8 @@ int compararDataHora(Data* x, Data* y) {
  * Função que transforma uma string numa data preenchendo todos os campos 
  */
 Data* stringToDate(char* str){
+    if(!str) return NULL;
+     
     Data* data = createData(0000,00,00,0,0);
     if (strcmp(str, "N/A") == 0) return data;
     int ano, mes, dia, hora, min;
@@ -193,7 +200,9 @@ int validacaoData(char* token) {
     int n = 0;
     if (strlen(token) != 10 && strlen(token) != 16) {
         n++;
+        return n;
     }
+
     char* mes = malloc(3 * sizeof(char));
     char* ano = malloc(5 * sizeof(char));
     char* dia = malloc(3 * sizeof(char));

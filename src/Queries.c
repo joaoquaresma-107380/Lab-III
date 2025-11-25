@@ -1,205 +1,171 @@
 #include "Queries.h"
 
+struct listaContagem {
+    char* code;
+    int cont;
+    struct listaContagem* next;
+};
+
 // Q1 - resumo de um aeroporto 
 
 void querie1 (Manager_Aeroportos *gestorAeroportos, const char *codigo , FILE *output){
     if (!gestorAeroportos || !codigo || !output )return;
-
     Aeroporto *a = procurarAeroporto(gestorAeroportos, (char*)codigo);
     if (!a){
         fprintf(output, "\n"); // nao encontrou o aeroporto
         return;
-
     }
-
-    fprintf (output, "%s;%s;%s;%s;%s\n",
+    else {
+        int r = fprintf (output, "%s;%s;%s;%s;%s\n",
         getCode(a),
         getName(a),
         getCity(a),
         getCountry(a),
         getType(a));
-
+        if(r < 0){
+        perror("Erro a imprimir a querie1\n");
+        }
+    }
 }
 
 // Q2 -- Top N aeronaves com mais voos realizados 
 
-// Estrutura para guardar contagem
-typedef struct {
-    Aeronave *a;
-    int total;
-} AviaoCount;
-
-
-// Função de comparação para ordenar
-static gint ordenarAvioes(gconstpointer a, gconstpointer b) {
-    const AviaoCount* aa = a;
-    const AviaoCount* bb = b;
-
-    // Primeiro por total 
-    if (bb->total > aa->total) return 1;
-    if (bb->total < aa->total) return -1;
-
-
-    // Depois por ID
-    return strcmp(acederAeronaveId(aa->a), acederAeronaveId(bb->a));
-}
-
-void querie2(GestorAviao *gestorAeronaves, Manager_Voos *gestorVoos, int n, const char* fabricante, FILE *output) {
-    if (!gestorAeronaves || !gestorVoos || !output) return;
+void querie2(GestorAviao* gestorAeronaves, Manager_Voos* gestorVoos,int n, const char* fabricante,FILE* output) {
+    if (!gestorVoos || !gestorAeronaves || !output) return;
 
     if (n <= 0) return;
 
-    Voo** aux = getValues(gestorVoos);
+    GList* lista_Aeronaves = todasOsAvioes(gestorAeronaves);
 
-    // hash table: idAeronave -> contador
-    GHashTable *contador = g_hash_table_new_full(g_str_hash, g_str_equal, free, free);
+   int tamanho_voos = getSp(gestorVoos);
+   Voo** voos = getValues(gestorVoos);
+   if(!voos) return;
 
-    // contar voos válidos 
-    for (int i = 0; i <= getSp(gestorVoos); i++) {
+   for(int i = 0; i < tamanho_voos;i++){
 
-        Voo *v = cloneVoo(aux[i]);
-        if (!v) continue;
+        char* aeronave = getAircraft(voos[i]);
+        Aeronave* a = encontrarAviao(gestorAeronaves,aeronave);
+        if(!a) continue;;
 
-        const char *status = getStatus(v);
-        if (status && strcmp(status, "Cancelado") == 0)
-            continue;
+    if(!fabricante){
 
-        // Obter ID da aeronave
-        const char *idAeronave = getAircraft(v);
-        if (!idAeronave) continue;
-
-        int *count = g_hash_table_lookup(contador, idAeronave);
-        if (!count) {
-            int *novo = malloc(sizeof(int));
-            *novo = 1;
-            g_hash_table_insert(contador, strdup(idAeronave), novo);
-        } else {
-            (*count)++;
-        }
+        if(strcmp(getStatus(voos[i]),"Cancelled") != 0) {
+        incrementarVoosTotaisAviao(a);
+    }
     }
 
-    // Construir lista de aeronaves 
-    GList *lista = todasOsAvioes(gestorAeronaves);
-    GList *listaContagem = NULL;
+    else{
 
-    for (GList *l = lista; l; l = l->next) {
-        Aeronave *a = l->data;
-        if (!a) continue;
-
-        // Filtro de fabricante 
-        if (fabricante && strcmp(acederAeronaveFabricante(a), fabricante) != 0)
-            continue;
-
-        const char *id = acederAeronaveId(a);
-        int *valor = g_hash_table_lookup(contador, id);
-        int total = valor ? *valor : 0;
-
-        AviaoCount *item = malloc(sizeof(AviaoCount));
-        item->a = a;
-        item->total = total;
-
-    
-        listaContagem = g_list_prepend(listaContagem, item);
+        
+        if((strcmp(getStatus(voos[i]),"Cancelled") != 0) && strcmp(acederAeronaveFabricante(a),fabricante) == 0) {
+        incrementarVoosTotaisAviao(a);
     }
+    } 
+   }
 
-    // Inverter devido ao uso de prepend
-    listaContagem = g_list_reverse(listaContagem);
+   for(int i = 0; i < tamanho_voos;i++){
+    destruirVoo(voos[i]);
+   }
+   free(voos);
 
-    // ordenar a lista 
-    listaContagem = g_list_sort(listaContagem, ordenarAvioes);
+   ordenarAvioesPorVoos(lista_Aeronaves);
 
-    // output
+   // output
     int printed = 0;
-    for (GList *l = listaContagem; l && printed < n; l = l->next) {
-        AviaoCount *item = l->data;
+    for (;printed < n && lista_Aeronaves; lista_Aeronaves = lista_Aeronaves->next) {
+        Aeronave* a = lista_Aeronaves->data;
+        if(!a) continue;
         fprintf(output, "%s;%s;%s;%d\n",
-            acederAeronaveId(item->a),
-            acederAeronaveFabricante(item->a),
-            acederAeronaveModelo(item->a),
-            item->total);
+            acederAeronaveId(a),
+            acederAeronaveFabricante(a),
+            acederAeronaveModelo(a),
+            acederVoosTotais(a));
         printed++;
     }
 
-    // libertar memória
-    g_list_free(lista); // aeronaves são geridas pelo gestor
-    g_list_free_full(listaContagem, free);
-    g_hash_table_destroy(contador);
-}
+    g_list_free(lista_Aeronaves);
 
+}
 
 // Q3 - Listar aeroporto com mais partidas entre 2 datas
 
-void querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data* dataInicio,Data* dataFim,FILE* output){
-
-    if (!gestorVoos || !gestorAeroportos || !dataInicio || !dataFim || !output)
-        return;
-
-    // contar partidas:
-    GHashTable *contagem = g_hash_table_new_full(g_str_hash ,g_str_equal, free, free);
-
-    Voo** aux = getValues(gestorVoos);
-    // percorrer todos os voos
-    for (int i = 0; i <= getSp(gestorVoos); i++){
-        Voo *v = cloneVoo(aux[i]);
-        if (!v) continue;
-        if (strcmp (getStatus(v), "Cancelado") == 0 ) continue;
-
-        Data *partida = getActual_Departure(v);
-
-        // verificar se a data esta dentro do intervalo
-
-        if (compararDataHora(partida, dataInicio) < 0 ||
-            compararDataHora(partida, dataFim) > 0)
-            continue;
-
-        char *origem = getOrigin(v);
-
-        // Atualizar contagem
-        int* count = g_hash_table_lookup(contagem, origem);
-        if (!count) {
-            int* novo = malloc(sizeof(int));
-            *novo = 1;
-            g_hash_table_insert(contagem, strdup(origem), novo);
-    } else {
-        (*count)++;
-    }
-
-}
-
-// Encontrar o aerporto com mais partidas 
-GList* keys = g_hash_table_get_keys(contagem);
-char* melhor = NULL;
-int max = 0;
-
-for (GList* l = keys; l; l = l->next) {
-    char* codigo = (char*)l->data;
-    int* valor = g_hash_table_lookup(contagem, codigo);
-
-    if (*valor > max || (*valor == max && (!melhor || strcmp(codigo, melhor) < 0))) {
-        melhor = codigo;
-        max = *valor;
-    }
-}
-    
-// Resultado 
-if (melhor) {
-        Aeroporto* a = procurarAeroporto(gestorAeroportos, melhor);
-        if (a) {
-            fprintf(output, "%s,%s,%s,%s,%d\n",
-                getCode(a),
-                getName(a),
-                getCity(a),
-                getCountry(a),
-                max);
-        } else {
-            fprintf(output, "\n"); // caso não encontre o aeroporto
+int procuraContagem(ListaContagem* ca,char* code) {
+    int n = 0;
+    ListaContagem** apontador = &ca;
+    while(*apontador != NULL) {
+        if (strcmp(code,(*apontador)->code) == 0) return n;
+        else{
+            *apontador = (*apontador)->next;
+            n++;
         }
-    } else {
-        fprintf(output, "\n"); // sem resultados
     }
+    return -1;
+}
 
-    // libertar memoria 
+void destruirLista(ListaContagem * l){
+    while(l){
+        free(l->code);
+        ListaContagem* aux = l;
+        l = l->next;
+        free(aux);
+    }
+}
 
-    g_list_free(keys);
-    g_hash_table_destroy(contagem);
+void querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data* dataInicio,Data* dataFim,FILE* output) {
+    int inicio = 0;
+    int fim = 0;
+    ordenaManager_Voos_Por_DataDeparture(gestorVoos);
+
+    int sp = getSp(gestorVoos);
+
+    for(int i = 0;i<sp;i++) {
+        while (compararDataHora(dataInicio,getActual_Departure((getValues(gestorVoos))[i])) == -1) {
+            inicio++;
+        }
+        fim = inicio;
+        while (compararDataHora(getActual_Departure((getValues(gestorVoos))[i]),dataFim) != -1) fim++;
+    }
+    if ((fim-inicio)<=0) {
+        fprintf(output, "Não encontrou nenhum aeroporto entre essas datas\n"); // nao encontrou nenhum aeroporto entre essas datas
+        return;
+    }
+    else {
+
+    ListaContagem* contaAeroportos = malloc(sizeof(ListaContagem));
+            contaAeroportos->code = getOrigin((getValues(gestorVoos))[inicio]);
+            contaAeroportos->cont = 1;
+            contaAeroportos->next = NULL;
+    
+    for(int j = inicio+1;j<=fim;j++) {
+        if(procuraContagem(contaAeroportos,getOrigin((getValues(gestorVoos))[j])) == -1) {
+            struct listaContagem* celula = malloc(sizeof(struct listaContagem));
+            celula->code = getOrigin((getValues(gestorVoos))[j]);
+            celula->cont = 1;
+            celula->next = contaAeroportos;
+            contaAeroportos = celula;
+        }
+        else {
+            int ind = procuraContagem(contaAeroportos,getOrigin((getValues(gestorVoos))[j]));
+            ListaContagem** apontador = &contaAeroportos;
+            while((*apontador) != NULL && ind>0) {
+                (*apontador) = (*apontador)->next;
+                ind--;
+            }
+            (*apontador)->cont++;
+        }
+    }
+    ListaContagem** apMax = &contaAeroportos;
+    ListaContagem** aux = &contaAeroportos;
+
+    while(*aux != NULL) {
+        if((*aux)->cont > (*apMax)->cont) *apMax = *aux;
+        *aux=(*aux)->next;
+    }
+    char* max = (*apMax)->code;
+    const char* cmax = max;
+    querie1(gestorAeroportos,cmax,output);
+
+    destruirLista(contaAeroportos);
+    }
+    
 }

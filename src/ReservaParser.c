@@ -1,6 +1,8 @@
 #include "ReservaParser.h"
 
 Reserva* tokensToReserva (char** tokens) {
+    if(tokens == NULL) return NULL;
+
     Reserva* r = createReserva(tokens[0],tamanhoArrayFlights(tokens[2]), tokenToArrayChar(tokens[2]), atoi(tokens[4]), tokens[6],atof(tokens[8]),tokens[10],tokens[12], tokens[14]);
     return r;
     
@@ -18,13 +20,12 @@ void readFileReserva(FILE* stream, Manager_Reservas* mr, Manager_Voos* mv, Gesto
         while ((read = getline(&line, &len, stream)) != -1) {
             lineAux = strdup(line);
             char** tokens = parseLine(lineAux);
-            
             if (validacaoReserva(tokens,mv,mp) == 0) {
                 Reserva* r = tokensToReserva(tokens);
                 adicionaReserva(r,mr);
             }
             else escreveFicheiro(line, reservationsErrors);
-
+            
             int length = tamanhoTokens(tokens);
             for(int i = 0; i < length; i++) free(tokens[i]);
             free(lineAux);

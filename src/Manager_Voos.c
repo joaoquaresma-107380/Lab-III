@@ -11,7 +11,7 @@ struct manager_Voos {
 Manager_Voos* createManager_Voos () {
     Manager_Voos* gestor = malloc(sizeof(Manager_Voos));
     gestor->sp = 0;
-    gestor->size = 10;
+    gestor->size = 100;
     gestor->values = malloc(sizeof(Voo*) * gestor->size);
     return gestor;
 }
@@ -31,13 +31,14 @@ void dupVoos(Manager_Voos* s) {
 void destruirManager_Voos(Manager_Voos* voos){
   if(voos == NULL) return;
 
-  if(voos->values == NULL) return;
+  if(voos->values != NULL){
 
-  for(int i = 0; i < voos->sp;i++){
+    for(int i = 0; i < voos->sp;i++){
     destruirVoo(voos->values[i]);
   }
   free(voos->values);
   free(voos);
+  }
 }
 
 // Função que retorna o sp (apontador para a última posição da Stack)
@@ -109,8 +110,8 @@ void merge(Voo* arr[], int p, int q, int r) {
   int n1 = q - p + 1;
   int n2 = r - q;
 
-  Voo* L[n1];
-  Voo* M[n2];
+  Voo** L = malloc(n1 * sizeof(Voo*));
+  Voo** M = malloc(n2 * sizeof(Voo*));
 
   for (int i = 0; i < n1; i++)
     L[i] = arr[p + i];
@@ -145,6 +146,10 @@ void merge(Voo* arr[], int p, int q, int r) {
     j++;
     k++;
   }
+
+  free(L);
+  free(M);
+
 }
 
 // Divide o array em 2 subarrays, ordena-os e encaxa-os ordenademente
@@ -164,7 +169,7 @@ void mergeSort(Voo* arr[], int l, int r) {
 
 //função que chama ordena o array dos voos pelas datas das actual_partidas da mais antiga para a mais recente
 void ordenaManager_Voos_Por_DataDeparture (Manager_Voos* v) {
-    mergeSort(v->values,0,v->sp);
+    mergeSort(v->values,0,v->sp-1);
 }
 
 // funçao que mostra uma lista de voos

@@ -283,6 +283,7 @@ Voo* cloneVoo(Voo* v){
  * Função que apaga um Voo
  */
 void destruirVoo(Voo* voo){
+    if(voo){
 
     free(voo->flight_id);
     destroiData(voo->departure);
@@ -296,6 +297,7 @@ void destruirVoo(Voo* voo){
     free(voo->airline);
     free(voo->tracking_URL);
     free(voo);
+    }
 }
 
 

@@ -15,8 +15,8 @@ int main(int argc, char* argv[]) {
     }
 
     char* dataSet = argv[1];
-    // char* comandos_exe = argv[2];
-    
+    char* comandos_exe = argv[2];
+
     char auxAirports[50];
     if (snprintf(auxAirports,50,"%sairports.csv",dataSet)<0) perror("Erro no nome do ficheiro de leitura airports");
     const char* filename_airports = strdup(auxAirports); // isto está a funcionar
@@ -45,8 +45,7 @@ int main(int argc, char* argv[]) {
     Manager_Aeroportos* aeroportos = createManagerAeroportos();
     readFileAeroporto(airports, aeroportos); 
     fecharFicheiro(airports);
-    
-    
+
     GestorAviao* aeronaves = criarGestorAviao();
     readFileAeronave(aircrafts, aeronaves);
     fecharFicheiro(aircrafts);
@@ -62,12 +61,18 @@ int main(int argc, char* argv[]) {
     Manager_Reservas* reservas = createManagerReservas();
     readFileReserva(reservations, reservas, voos, passageiros);
     fecharFicheiro(reservations);
-    return 0;
+    
 
-
-    /*FILE* comandos = abrirFicheiroLeitura(comandos_exe);
+    FILE* comandos = abrirFicheiroLeitura(comandos_exe);
     readFileComandos(comandos, aeroportos,voos, aeronaves);
-    fecharFicheiro(comandos);*/
-    // return 0;
+    fecharFicheiro(comandos);
+
+    /*destruirManager_Aeroportos(aeroportos);
+    destruirGestorAeronaves(aeronaves);
+    destroiGestorPassageiros(passageiros);
+    destruirManager_Voos(voos);*/
+    //destruirManager_Reservas(reservas);
+
+    return 0;
 }
 
