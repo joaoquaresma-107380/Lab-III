@@ -1,9 +1,5 @@
 #include <glib.h>
-#include "AeroportoParser.h"
-#include "AeronaveParser.h"
-#include "ReservaParser.h"
-#include "VooParser.h"
-#include "PassageiroParser.h"
+#include "Parser.h"
 #include "ComandoParser.h"
 
 
@@ -43,28 +39,36 @@ int main(int argc, char* argv[]) {
     FILE* reservations = abrirFicheiroLeitura(filename_reservations);
 
     Manager_Aeroportos* aeroportos = createManagerAeroportos();
-    readFileAeroporto(airports, aeroportos); 
+    FILE* aeroportosErrors = abrirFicheiroEscrita("dataset-errors/passengers.csv");
+    readFile(airports, tokensToAeroporto ,aeroportos);
     fecharFicheiro(airports);
 
     GestorAviao* aeronaves = criarGestorAviao();
-    readFileAeronave(aircrafts, aeronaves);
+    FILE* aeroportosErrors = abrirFicheiroEscrita("dataset-errors/passengers.csv");
+    readFile(aircrafts, tokensToAeronave,aeronaves);
     fecharFicheiro(aircrafts);
     
     GestorPassageiros* passageiros = createGestorPassageiros();
-    readFilePassageiro(passengers, passageiros);
+    FILE* aeroportosErrors = abrirFicheiroEscrita("dataset-errors/passengers.csv");
+    readFile(passengers, tokensToPassageiro ,passageiros);
     fecharFicheiro(passengers);
 
     Manager_Voos* voos = createManager_Voos();
+    FILE* aeroportosErrors = abrirFicheiroEscrita("dataset-errors/passengers.csv");
     readFileVoo(flights, voos, aeronaves);
     fecharFicheiro(flights);
 
     Manager_Reservas* reservas = createManagerReservas();
+    FILE* aeroportosErrors = abrirFicheiroEscrita("dataset-errors/passengers.csv");
     readFileReserva(reservations, reservas, voos, passageiros);
     fecharFicheiro(reservations);
     
+    ordenaManager_Voos_Por_DataDeparture(gestorVoos);
+    ListaContagem** aeronavesMaisVoos = criaAeronavesMaisVoos(GestorAviao* gestorAeronaves, Manager_Voos* gestorVoos);
+    ListaContagem** airlinesMaisAtraso = criaAirlinesMaisAtraso (Manager_Voos* gestorVoos);
 
     FILE* comandos = abrirFicheiroLeitura(comandos_exe);
-    readFileComandos(comandos, aeroportos,voos, aeronaves);
+    readFileComandos(comandos, aeroportos, aeronaves, voos, reservas, aeronavesMaisVoos, airlinesMaisAtraso);
     fecharFicheiro(comandos);
 
     /*destruirManager_Aeroportos(aeroportos);

@@ -1,120 +1,98 @@
 #include "Queries.h"
 
-struct listaContagem {
-    char* code;
-    int cont;
-    struct listaContagem* next;
-};
-
 // Q1 - resumo de um aeroporto 
+/*querie 1: fazer um increasePassageiroDeparture e um increasePassageiroArrival no aeroporto;
+chamar essas duas funçoes nas no inserir reserva conforme o getOrigin(procuraVoo(idflight)) ou getDeparture(procuraVoo(idflight));*/
 
-void querie1 (Manager_Aeroportos *gestorAeroportos, const char *codigo , FILE *output){
+char** querie1 (Manager_Aeroportos *gestorAeroportos, Manager_Reservas* gestorReservas, const char *codigo){
+    
     if (!gestorAeroportos || !codigo || !output )return;
-    Aeroporto *a = procurarAeroporto(gestorAeroportos, (char*)codigo);
-    if (!a){
-        fprintf(output, "\n"); // nao encontrou o aeroporto
-        return;
+    
+    ListaContagem* contaPassAeroporto = malloc(sizeof(ListaContagem));
+                    contaPassAeroporto->code = (char*) codigo;
+                    contaPassAeroporto->cont = 0;
+                    contaPassAeroporto->soma = 0;
+                    contaPassAeroporto->next = NULL;
+
+    for(int i = 0;i<getSp(gestorReservas);i++) {
+        if (getNumFlightsId(gestorReservas) == 2) {
+            if ((strcmp((char*)codigo,getOrigin(procuraVoo(getFlightsId(getValues(gestorReservas))[i])[0])) == 0) 
+            || (strcmp((char*)codigo,getOrigin(procuraVoo(getFlightsId(getValues(gestorReservas))[i])[1])) == 0)) {
+                contaPassAeroporto->cont++; 
+            }
+            if ((strcmp((char*)codigo,getDestination(procuraVoo(getFlightsId(getValues(gestorReservas))[i])[1])) == 0)
+            || (strcmp((char*)codigo,getDestination(procuraVoo(getFlightsId(getValues(gestorReservas))[i])[1])) == 0)) {
+                contaPassAeroporto->soma++;
+            }
+        }
+        else {
+            if (strcmp((char*)codigo,getOrigin(procuraVoo(getFlightsId(getValues(gestorReservas))[i])[0])) == 0) {
+                contaPassAeroporto->cont++; 
+            }
+            if (strcmp((char*)codigo,getDestination(procuraVoo(getFlightsId(getValues(gestorReservas))[i])[1])) == 0) {
+                contaPassAeroporto->soma++;
+            }
+        }
     }
-    else {
-        int r = fprintf (output, "%s;%s;%s;%s;%s\n",
+    Aeroporto* a = procurarAeroporto(gestorAeroportos, contPassAeroporto->code);
+    char** resultados = malloc(1 * sizeof(char*));
+    resultados[1] = malloc(100 * sizeof(char));
+        int r = snprintf (resultados[1],100,"%s;%s;%s;%s;%s;%d;%d\n",
         getCode(a),
         getName(a),
         getCity(a),
         getCountry(a),
-        getType(a));
+        getType(a),
+        contaPassAeroporto->soma, // destination ou seja arrivalCount
+        contaPassAeroporto->cont); // origin ou seja departureCount
         if(r < 0){
         perror("Erro a imprimir a querie1\n");
         }
-    }
+    resultados[2] = NULL;
+
+    destruirLista(contaPassAeroporto);
+    
+    return resultados;
 }
 
-// Q2 -- Top N aeronaves com mais voos realizados 
+// Q2 -- Top N aeronaves com mais voos realizados -- ainda falta modificar esta querie
+// fazer no manager_voos uma struct com a lista da querie 5 e da querie 2
 
-void querie2(GestorAviao* gestorAeronaves, Manager_Voos* gestorVoos,int n, const char* fabricante,FILE* output) {
-    if (!gestorVoos || !gestorAeronaves || !output) return;
+char** querie2(GestorAviao* gestorAeronaves, Manager_Voos* gestorVoos,int n, const char* fabricante, ListaContagem** contaAeronaves) {
+    
 
-    if (n <= 0) return;
-
-    GList* lista_Aeronaves = todasOsAvioes(gestorAeronaves);
-
-   int tamanho_voos = getSp(gestorVoos);
-   Voo** voos = getValues(gestorVoos);
-   if(!voos) return;
-
-   for(int i = 0; i < tamanho_voos;i++){
-
-        char* aeronave = getAircraft(voos[i]);
-        Aeronave* a = encontrarAviao(gestorAeronaves,aeronave);
-        if(!a) continue;;
-
-    if(!fabricante){
-
-        if(strcmp(getStatus(voos[i]),"Cancelled") != 0) {
-        incrementarVoosTotaisAviao(a);
+    char** resultados = malloc(n * sizeof(char*));
+    for (int i = 0;i<n && (*contaAeronaves) != NULL;i++) {
+        resultados[i] = malloc(100 * sizeof(char));
+        if (fabricante == NULL) {
+                snprintf(resultados[i], 100, "%s;%d;%d\n",
+                        (*contaAeronaves)->code,
+                        fabricante,
+                        acederAeronaveModelo(encontrarAviao(gestorAeronaves,(*contaAeronaves)->code)),
+                        (*contaAeronaves)->cont);   
+        }
+        else {
+            if (acederAeronaveFabricante(encontrarAviao(gestorAeronaves,(*contaAeronaves)->code)) == (char*) fabricante) {
+                snprintf(resultados[i], 100, "%s;%s;%s;%d\n",
+                        (*contaAeronaves)->code,
+                        fabricante,
+                        acederAeronaveModelo(encontrarAviao(gestorAeronaves,(*contaAeronaves)->code)),
+                        (*contaAeronaves)->cont);
+            }
+            (*contaAeronaves) = (*contaAeronaves)->next;
+        }
     }
-    }
+    resultados[n] = NULL;
 
-    else{
-
-        
-        if((strcmp(getStatus(voos[i]),"Cancelled") != 0) && strcmp(acederAeronaveFabricante(a),fabricante) == 0) {
-        incrementarVoosTotaisAviao(a);
-    }
-    } 
-   }
-
-   for(int i = 0; i < tamanho_voos;i++){
-    destruirVoo(voos[i]);
-   }
-   free(voos);
-
-   ordenarAvioesPorVoos(lista_Aeronaves);
-
-   // output
-    int printed = 0;
-    for (;printed < n && lista_Aeronaves; lista_Aeronaves = lista_Aeronaves->next) {
-        Aeronave* a = lista_Aeronaves->data;
-        if(!a) continue;
-        fprintf(output, "%s;%s;%s;%d\n",
-            acederAeronaveId(a),
-            acederAeronaveFabricante(a),
-            acederAeronaveModelo(a),
-            acederVoosTotais(a));
-        printed++;
-    }
-
-    g_list_free(lista_Aeronaves);
-
+    return resultados;
 }
 
 // Q3 - Listar aeroporto com mais partidas entre 2 datas
 
-int procuraContagem(ListaContagem* ca,char* code) {
-    int n = 0;
-    ListaContagem** apontador = &ca;
-    while(*apontador != NULL) {
-        if (strcmp(code,(*apontador)->code) == 0) return n;
-        else{
-            *apontador = (*apontador)->next;
-            n++;
-        }
-    }
-    return -1;
-}
-
-void destruirLista(ListaContagem * l){
-    while(l){
-        free(l->code);
-        ListaContagem* aux = l;
-        l = l->next;
-        free(aux);
-    }
-}
-
-void querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data* dataInicio,Data* dataFim,FILE* output) {
+char** querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data* dataInicio,Data* dataFim) {
     int inicio = 0;
     int fim = 0;
-    ordenaManager_Voos_Por_DataDeparture(gestorVoos);
+    // ordenaManager_Voos_Por_DataDeparture(gestorVoos);
 
     int sp = getSp(gestorVoos);
 
@@ -126,14 +104,14 @@ void querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data
         while (compararDataHora(getActual_Departure((getValues(gestorVoos))[i]),dataFim) != -1) fim++;
     }
     if ((fim-inicio)<=0) {
-        fprintf(output, "Não encontrou nenhum aeroporto entre essas datas\n"); // nao encontrou nenhum aeroporto entre essas datas
+        // nao encontrou nenhum aeroporto entre essas datas
         return;
     }
-    else {
 
     ListaContagem* contaAeroportos = malloc(sizeof(ListaContagem));
             contaAeroportos->code = getOrigin((getValues(gestorVoos))[inicio]);
             contaAeroportos->cont = 1;
+            contaAeroportos->soma = 0;
             contaAeroportos->next = NULL;
     
     for(int j = inicio+1;j<=fim;j++) {
@@ -141,6 +119,7 @@ void querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data
             struct listaContagem* celula = malloc(sizeof(struct listaContagem));
             celula->code = getOrigin((getValues(gestorVoos))[j]);
             celula->cont = 1;
+            contaAeroportos->soma = 0;
             celula->next = contaAeroportos;
             contaAeroportos = celula;
         }
@@ -161,11 +140,126 @@ void querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data
         if((*aux)->cont > (*apMax)->cont) *apMax = *aux;
         *aux=(*aux)->next;
     }
-    char* max = (*apMax)->code;
-    const char* cmax = max;
-    querie1(gestorAeroportos,cmax,output);
+    Aeroporto* a = procurarAeroporto(gestorAeroportos, (*apMax)->code);
+    char** resultados = malloc(1 * sizeof(char*));
+    resultados[1] = malloc(100 * sizeof(char));
+        int r = snprintf (resultados[1],100,"%s;%s;%s;%s;%s;%d;%d\n",
+        getCode(a),
+        getName(a),
+        getCity(a),
+        getCountry(a),
+        getType(a),
+        (*apMax)->soma, // destination ou seja arrivalCount
+        (*apMax)->cont); // origin ou seja departureCount
+        if(r < 0){
+        perror("Erro a imprimir a querie3\n");
+        }
+    resultados[2] = NULL;
+
 
     destruirLista(contaAeroportos);
+    
+    return resultados;
+    
+}
+
+// Q4 - Qual o passageiro que esteve mais tempo no top 10 de passageiros que mais gastaram em viagens durante um período?
+/*querie 4: Usar o managerReservas Ordenado pelo getDeparture(idFlight) para poder ir buscar uma altura no tempo pelas datas, somar os price nos
+documentNumber que forem iguais e tirar os dez preços mais altos;*/
+
+
+
+
+// Q5 - Top N companhias aéreas com mais tempo de atraso médio por voo
+/*querie 5: Ir aos voos e ir guardando, quando a airline é igual, a quantidade de voos delayed e ir somando os minutos de delay,
+ no fim dividir um pelo outro para dar o tempo médio;*/
+
+char** querie5 (Manager_Voos* gestorVoos, int n, ListaContagem* contaAirlines) {
+    char** resultados = malloc(n * sizeof(char*));
+    for (int i = 0;i < n && (*contaAirlines) != NULL; i++) {
+        resultados[i] = malloc(100 * sizeof(char));
+        snprintf(resultados[i], 100, "%s;%d;%d\n",
+            (*contaAirlines)->code,
+            (*contaAirlines)->cont,
+            ((*contaAirlines)->soma / (*contaAirlines)->cont));
+        (*contaAirlines) = (*contaAirlines)->next
     }
+    resultados[n] = NULL;
+
+    return resultados;
+    
+}
+
+// Q6 - Listar o aerporto de destino mais comum para passageiros de uma determinada nacionalidade
+/*querie 6: ir às reservas com o getCountry(procuraPassageiro(documentNumber)) e guardar os que forem iguais à nacionalidade incerida,
+ver getdestino(idFlight) da reserva e ir contando o que aparece mais vezes;*/
+
+char** querie6 (Manager_Reservas* gestorReservas, char* nationality) {
+    
+
+    ListaContagem* contaPassageiros = malloc(sizeof(ListaContagem));
+    contaPassageiros = NULL;
+    
+    for(int j = inicio+1;j<=fim;j++) { // falta mudar este ciclo quando as reservas forem uma arvore
+        if (strcmp(nationality,getCountry(procuraPassageiro(getDocumentNumber(gestorReservas->reserva)))) == 0) {
+            if(getNumFlightsId(gestorReservas->reserva) == 2) {
+                if(procuraContagem(contaPassageirosos,getDestination((getFlightsId(gestorReservas->reserva))[1])) == -1) {
+                    struct listaContagem* celula = malloc(sizeof(struct listaContagem));
+                    celula->code = getDestination((getFlightsId(gestorReservas->reserva))[1]);
+                    celula->cont = 1;
+                    contaAeroportos->soma = 0;
+                    celula->next = contaPassageiros;
+                    contaPassageiros = celula;
+                }
+                else {
+                    int ind = procuraContagem(contaPassageiros,getDestination((getFlightsId(gestorReservas->reserva))[1]));
+                    ListaContagem** apontador = &contaPassageiros;
+                    while((*apontador) != NULL && ind>0) {
+                        (*apontador) = (*apontador)->next;
+                        ind--;
+                    }
+                    (*apontador)->cont++;
+                }
+            }
+            else {
+                if(procuraContagem(contaPassageirosos,getDestination((getFlightsId(gestorReservas->reserva))[0])) == -1) {
+                    struct listaContagem* celula = malloc(sizeof(struct listaContagem));
+                    celula->code = getDestination((getFlightsId(gestorReservas->reserva))[0]);
+                    celula->cont = 1;
+                    contaAeroportos->soma = 0;
+                    celula->next = contaPassageiros;
+                    contaPassageiros = celula;
+                }
+                else {
+                    int ind = procuraContagem(contaPassageiros,getDestination((getFlightsId(gestorReservas->reserva))[0]));
+                    ListaContagem** apontador = &contaPassageiros;
+                    while((*apontador) != NULL && ind>0) {
+                        (*apontador) = (*apontador)->next;
+                        ind--;
+                    }
+                    (*apontador)->cont++;
+                }
+            }
+        }
+    }
+    ListaContagem** apMax = &contaPassageiros;
+    ListaContagem** aux = &contaPassageiros;
+
+    while(*aux != NULL) {
+        if((*aux)->cont > (*apMax)->cont) *apMax = *aux;
+        *aux=(*aux)->next;
+    }
+
+    char** resultados = malloc(1 * sizeof(char*));
+    resultados[1] = malloc(100 * sizeof(char));
+    int r = snprintf (resultados[1], 100, "%s;%d\n",(*apMax)->code,(*apMax)->cont);
+        if(r < 0){
+        perror("Erro a imprimir a querie1\n");
+        }
+    resultados[2] = NULL;
+
+    destruirLista(contaPassageiros);
+
+    return resultados;
     
 }
