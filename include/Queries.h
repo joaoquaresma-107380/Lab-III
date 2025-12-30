@@ -1,20 +1,16 @@
-#include "Manager_Aeroportos.h"
-#include "Manager_Voos.h"
-#include "Manager_Aeronaves.h"
-#include "Manager_Passageiros.h"
+#include "UtilsQueries.h"
 
 #ifndef QUERIES_H
 #define QUERIES_H
 
-typedef struct listaContagem ListaContagem;
+char** querie1 (Manager_Aeroportos *gestorAeroportos, Manager_Reservas* gestorReservas, const char *codigo);
 
-void querie1 (Manager_Aeroportos *gestorAeroportos, const char *codigo , FILE *output);
+char** querie2(GestorAviao* gestorAeronaves, Manager_Voos* gestorVoos,int n, const char* fabricante, ListaContagem** contaAeronaves);
 
-void querie2(GestorAviao *gestorAeronaves, Manager_Voos *gestorVoos, int n, const char* fabricante, FILE *output);
+char** querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data* dataInicio,Data* dataFim);
 
-int procuraContagem(ListaContagem* ca,char* code);
-void destruirLista(ListaContagem * l);
+char** querie5 (Manager_Voos* gestorVoos, int n, ListaContagem* contaAirlines);
 
-void querie3 (Manager_Voos* gestorVoos,Manager_Aeroportos* gestorAeroportos,Data* dataInicio,Data* dataFim,FILE* output);
+char** querie6 (Manager_Reservas* gestorReservas, char* nationality);
 
 #endif 
